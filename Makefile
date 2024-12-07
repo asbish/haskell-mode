@@ -49,6 +49,7 @@ INIT_PACKAGES="(progn \
       (package-install pkg))) \
   )"
 
+PREFIX = /usr/local
 
 .PHONY: all compile info clean check check-emacs-version check-ert check-package-lint check-relint
 
@@ -101,6 +102,12 @@ check-ert: $(ELCHECKS)
 # TODO: fix issues, then enforce build failure if this fails
 check-package-lint:
 	$(BATCH) --eval $(INIT_PACKAGES) --eval '(setq package-lint-main-file "haskell-mode.el")' -f package-lint-batch-and-exit $(ELFILES) || true
+
+.PHONY: install
+install: all
+	mkdir -p $(PREFIX)/share/emacs/site-lisp/haskell-mode
+	cp $(CURDIR)/*.el $(PREFIX)/share/emacs/site-lisp/haskell-mode
+	cp $(CURDIR)/build-$(EMACS_VERSION)/* $(PREFIX)/share/emacs/site-lisp/haskell-mode
 
 clean:
 	$(RM) -r build-$(EMACS_VERSION) $(AUTOLOADS) $(AUTOLOADS:.el=.elc) haskell-mode.info dir
